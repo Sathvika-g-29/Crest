@@ -1,25 +1,38 @@
-import fitz
+
+import pymupdf
 
 
 def extract_text_from_pdf(file_path: str) -> str:
-    """
-    Extract text from a PDF resume.
+    """Extract readable text from a PDF file."""
 
-    Args:
-        file_path: Path to the uploaded PDF.
+    try:
+        with pymupdf.open(file_path) as document:
+            if document.is_encrypted:
+                raise ValueError(
+                    "Password-protected PDFs are not supported."
+                )
 
-    Returns:
-        Extracted text from all pages.
-    """
+            if document.page_count == 0:
+                raise ValueError("The PDF contains no pages.")
 
-    document = fitz.open(file_path)
+            pages_text = [
+                page.get_text()
+                for page in document
+            ]
 
-    pages_text = []
+            extracted_text = "\n".join(pages_text).strip()
 
-    for page in document:
-        text = page.get_text()
-        pages_text.append(text)
+            if not extracted_text:
+                raise ValueError(
+                    "No readable text was found in the PDF. "
+                    "The resume may be scanned or image-based."
+                )
 
-    document.close()
+            return extracted_text
 
-    return "\n".join(pages_text).strip()
+    except ValueError:
+        raise
+    except Exception as exc:
+        raise ValueError(
+            "The uploaded file could not be read as a valid PDF."
+        ) from exc

@@ -4,3 +4,4 @@ python-multipart
 pymupdf
 python-dotenv
 google-genai
+sentence-transformers

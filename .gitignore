@@ -2,4 +2,5 @@ venv/
 __pycache__/
 *.pyc
 .env
-uploads/*
+uploads/
+.pytest_cache/
